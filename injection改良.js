@@ -600,8 +600,12 @@ function modifyCode(text) {
 
             // Adding Tracker Module
             new Module("Tracker", function(callback) {
+                let line; // Store the line object globally
+
                 if (callback) {
                     renderTickLoop["Tracker"] = function() {
+                        if (line) game$1.gameScene.remove(line); // Remove the previous line
+
                         // Get player's position and screen center
                         const playerPos = player$1.pos.clone();
                         const screenCenter = controls.position.clone();
@@ -615,7 +619,7 @@ function modifyCode(text) {
 
                         // Create a material for the line
                         const lineMaterial = new THREE.LineBasicMaterial({ color: lineColor });
-            
+
                         // Create a geometry for the line
                         const lineGeometry = new THREE.Geometry();
                         lineGeometry.vertices.push(
@@ -624,19 +628,21 @@ function modifyCode(text) {
                         );
 
                         // Create the line object
-                        const line = new THREE.Line(lineGeometry, lineMaterial);
-            
+                        line = new THREE.Line(lineGeometry, lineMaterial);
+
                         // Add the line to the scene
                         game$1.gameScene.add(line);
-
-                        // Remove the line after rendering to avoid keeping unnecessary objects
-                        setTimeout(() => game$1.gameScene.remove(line), 0);
                     };
                 } else {
                     // Remove the tracker when disabled
                     delete renderTickLoop["Tracker"];
+                    if (line) {
+                        game$1.gameScene.remove(line); // Ensure the line is removed when tracker is disabled
+                        line = null; // Clear the reference to avoid memory leaks
+                    }
                 }
             });
+
 
 
 
