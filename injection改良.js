@@ -543,7 +543,7 @@ function modifyCode(text) {
 				} else delete tickLoop["AutoClicker"];
 			});
 
-			// Modified ESP Module
+			// Adding ESP Module
             new Module("ESP", function(callback) {
                 if (callback) {
                     let entities = game$1.world.entitiesDump;
@@ -552,51 +552,42 @@ function modifyCode(text) {
                         for (const entity of entities.values()) {
                             if (entity.id == player$1.id) continue; // Skip the player itself
 
-                // Apply the red border to the entity without moving it to the forefront
-                            for (const mesh of entity.mesh.meshes) {
-                                mesh.material.depthTest = true; // Allow depth testing
-                                mesh.material.depthWrite = true; // Ensure proper depth sorting
-                                mesh.material.transparent = true;
-                                mesh.material.opacity = 0.5; // Make the border semi-transparent
-                                mesh.material.color.set(255, 0, 0); // Set the red color for the border
-                                mesh.renderOrder = 999; // Make sure the red border is rendered last
+                            // Highlight the entity with red box
+                            for(const mesh in entity.mesh.meshes) {
+                                entity.mesh.meshes[mesh].material.depthTest = false;
+                                entity.mesh.meshes[mesh].material.transparent = true;
+                                entity.mesh.meshes[mesh].material.opacity = 0.5;
+                                entity.mesh.meshes[mesh].material.color.set(255, 0, 0);
+                                entity.mesh.meshes[mesh].renderOrder = 6;
                             }
 
-                // Armor and Cape
-                            for (const armorMesh of entity.mesh.armorMesh) {
-                                armorMesh.material.depthTest = true;
-                                armorMesh.material.depthWrite = true;
-                                armorMesh.material.transparent = true;
-                                armorMesh.material.opacity = 0.5;
-                                armorMesh.material.color.set(255, 0, 0);
-                                armorMesh.renderOrder = 999; // Render over blocks
+                            // Armor and Cape
+                            for(const mesh in entity.mesh.armorMesh) {
+                                entity.mesh.armorMesh[mesh].material.depthTest = false;
+                                entity.mesh.armorMesh[mesh].material.renderOrder = 4;
                             }
 
                             if (entity.mesh.capeMesh) {
-                                entity.mesh.capeMesh.children[0].material.depthTest = true;
-                                entity.mesh.capeMesh.children[0].depthWrite = true;
-                                entity.mesh.capeMesh.children[0].material.transparent = true;
-                                entity.mesh.capeMesh.children[0].material.opacity = 0.5;
-                                entity.mesh.capeMesh.children[0].material.color.set(255, 0, 0);
-                                entity.mesh.capeMesh.children[0].renderOrder = 999;
+                                entity.mesh.capeMesh.children[0].material.depthTest = false;
+                                entity.mesh.capeMesh.children[0].renderOrder = 5;
                             }
                         }
                     };
                 } else {
-        // Remove ESP highlights when module is disabled
+                    // Remove ESP highlights when module is disabled
                     delete tickLoop["ESP"];
-                    for (const entity of game$1.world.entitiesDump.values()) {
-                        for (const mesh of entity.mesh.meshes) {
-                            mesh.material.depthTest = true;
-                            mesh.material.depthWrite = true;
-                            mesh.material.transparent = false;
-                            mesh.material.opacity = 1;
-                            mesh.renderOrder = 0;
+                    for(const entity of game$1.world.entitiesDump.values()) {
+                        for(const mesh in entity.mesh.meshes) {
+                            entity.mesh.meshes[mesh].material.depthTest = true;
+                            entity.mesh.meshes[mesh].material.transparent = false;
+                            entity.mesh.meshes[mesh].material.opacity = 1;
+                            entity.mesh.meshes[mesh].renderOrder = 0;
                         }
                     }
                 }
             });
-	    
+
+
 
 			new Module("Sprint", function() {});
 			const velocity = new Module("Velocity", function() {});
