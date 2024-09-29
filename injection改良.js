@@ -543,49 +543,100 @@ function modifyCode(text) {
 				} else delete tickLoop["AutoClicker"];
 			});
 
-			// Adding ESP Module
-			new Module("ESP", function(callback) {
-    			if (callback) {
-        			let entities = game$1.world.entitiesDump;
-        			tickLoop["ESP"] = function() {
-			            // Loop through all entities
-			            for (const entity of entities.values()) {
-			                if (entity.id == player$1.id) continue; // Skip the player itself
+			// Modified ESP Module
+            new Module("ESP", function(callback) {
+                if (callback) {
+                    let entities = game$1.world.entitiesDump;
+                    tickLoop["ESP"] = function() {
+                        // Loop through all entities
+                        for (const entity of entities.values()) {
+                            if (entity.id == player$1.id) continue; // Skip the player itself
 
-                			// Highlight the entity with red box
-                			for(const mesh in entity.mesh.meshes) {
-                			    entity.mesh.meshes[mesh].material.depthTest = false;
-                			    entity.mesh.meshes[mesh].material.transparent = true;
-                			    entity.mesh.meshes[mesh].material.opacity = 0.5;
-                			    entity.mesh.meshes[mesh].material.color.set(255, 0, 0);
-                			    entity.mesh.meshes[mesh].renderOrder = 6;
-                			}
+                // Apply the red border to the entity without moving it to the forefront
+                            for (const mesh of entity.mesh.meshes) {
+                                mesh.material.depthTest = true; // Allow depth testing
+                                mesh.material.depthWrite = true; // Ensure proper depth sorting
+                                mesh.material.transparent = true;
+                                mesh.material.opacity = 0.5; // Make the border semi-transparent
+                                mesh.material.color.set(255, 0, 0); // Set the red color for the border
+                                mesh.renderOrder = 999; // Make sure the red border is rendered last
+                            }
 
-                			// Armor and Cape
-                			for(const mesh in entity.mesh.armorMesh) {
-                			    entity.mesh.armorMesh[mesh].material.depthTest = false;
-                			    entity.mesh.armorMesh[mesh].material.renderOrder = 4;
-                			}
+                // Armor and Cape
+                            for (const armorMesh of entity.mesh.armorMesh) {
+                                armorMesh.material.depthTest = true;
+                                armorMesh.material.depthWrite = true;
+                                armorMesh.material.transparent = true;
+                                armorMesh.material.opacity = 0.5;
+                                armorMesh.material.color.set(255, 0, 0);
+                                armorMesh.renderOrder = 999; // Render over blocks
+                            }
 
-                			if (entity.mesh.capeMesh) {
-                			    entity.mesh.capeMesh.children[0].material.depthTest = false;
-                			    entity.mesh.capeMesh.children[0].renderOrder = 5;
-            				}
-            			}
-        			};
-    			} else {
-        			// Remove ESP highlights when module is disabled
-        			delete tickLoop["ESP"];
-        			for(const entity of game$1.world.entitiesDump.values()) {
-            			for(const mesh in entity.mesh.meshes) {
-                			entity.mesh.meshes[mesh].material.depthTest = true;
-                			entity.mesh.meshes[mesh].material.transparent = false;
-                			entity.mesh.meshes[mesh].material.opacity = 1;
-                			entity.mesh.meshes[mesh].renderOrder = 0;
-            			}
-        			}
-    			}
-			});
+                            if (entity.mesh.capeMesh) {
+                                entity.mesh.capeMesh.children[0].material.depthTest = true;
+                                entity.mesh.capeMesh.children[0].depthWrite = true;
+                                entity.mesh.capeMesh.children[0].material.transparent = true;
+                                entity.mesh.capeMesh.children[0].material.opacity = 0.5;
+                                entity.mesh.capeMesh.children[0].material.color.set(255, 0, 0);
+                                entity.mesh.capeMesh.children[0].renderOrder = 999;
+                            }
+                        }
+                    };
+                } else {
+        // Remove ESP highlights when module is disabled
+                    delete tickLoop["ESP"];
+                    for (const entity of game$1.world.entitiesDump.values()) {
+                        for (const mesh of entity.mesh.meshes) {
+                            mesh.material.depthTest = true;
+                            mesh.material.depthWrite = true;
+                            mesh.material.transparent = false;
+                            mesh.material.opacity = 1;
+                            mesh.renderOrder = 0;
+                        }
+                    }
+                }
+            });
+
+
+            // Adding Tracker Module
+            new Module("Tracker", function(callback) {
+                if (callback) {
+                    renderTickLoop["Tracker"] = function() {
+                        // Get player's position and screen center
+                        const playerPos = player$1.pos.clone();
+                        const screenCenter = controls.position.clone();
+
+                        // Calculate the 2D position of the player on the screen
+                        const playerScreenPos = new Vector2();
+                        game$1.renderer.projectVector(playerPos, playerScreenPos);
+
+                        // Define the line color
+                        const lineColor = new THREE.Color(1, 0, 0); // Red color
+
+                        // Create a material for the line
+                        const lineMaterial = new THREE.LineBasicMaterial({ color: lineColor });
+            
+                        // Create a geometry for the line
+                        const lineGeometry = new THREE.Geometry();
+                        lineGeometry.vertices.push(
+                            new THREE.Vector3(playerPos.x, playerPos.y, playerPos.z), // Player position
+                            new THREE.Vector3(screenCenter.x, screenCenter.y, screenCenter.z) // Screen center
+                        );
+
+                        // Create the line object
+                        const line = new THREE.Line(lineGeometry, lineMaterial);
+            
+                        // Add the line to the scene
+                        game$1.gameScene.add(line);
+
+                        // Remove the line after rendering to avoid keeping unnecessary objects
+                        setTimeout(() => game$1.gameScene.remove(line), 0);
+                    };
+                } else {
+                    // Remove the tracker when disabled
+                    delete renderTickLoop["Tracker"];
+                }
+            });
 
 
 
