@@ -587,70 +587,68 @@ function modifyCode(text) {
                 }
             });
 
-            // NameTag Module
-            new Module("NameTag", function(callback) {
+            // Adding Nametag Module
+            new Module("Nametag", function(callback) {
                 if (callback) {
-                    let entities = game$1.world.entitiesDump;
-                    tickLoop["NameTag"] = function() {
+                    renderTickLoop["Nametag"] = function() {
+                        const entities = game$1.world.entitiesDump;
+
                         for (const entity of entities.values()) {
-                            if (entity.id == player$1.id) continue; // 自分自身をスキップ
+                            if (entity.id == player$1.id) continue; // Skip the player itself
 
-                            // プレイヤーの位置を取得
-                            const playerPos = entity.pos.clone();
+                            // Get the player's current weapon and armor
+                            const currentItem = entity.inventory.getCurrentItem(); // Get the current weapon/item
+                            const armor = entity.inventory.armorInventory; // Get armor inventory
 
-                            // 名前、装備、防具、武器を表示するテキストを作成
-                            const nameText = entity.name;
-                            const armorText = getArmorText(entity); // 防具情報を取得する関数を追加
-                            const weaponText = getWeaponText(entity); // 武器情報を取得する関数を追加
-                            const displayText = `${nameText}\nArmor: ${armorText}\nWeapon: ${weaponText}`;
+                            // Get the entity's position
+                            const pos = entity.mesh.position.clone();
 
-                            // テキストの描画位置を設定
-                            const screenPos = new Vector2();
-                            game$1.renderer.projectVector(playerPos, screenPos);
+                            // Create a list to display
+                            let displayInfo = entity.name; // Start with player name
 
-                            // 描画するためのスタイル設定
-                            const textMaterial = new THREE.SpriteMaterial({ color: 0xffffff }); // 白色のテキスト
-                            const textSprite = new THREE.Sprite(textMaterial);
+                            // Add weapon info
+                            if (currentItem) {
+                                const weaponName = currentItem.getItem().name||"Unknown";
+                                displayInfo += "\nWeapon: ${weaponName}";
+                            } else {
+                                displayInfo += "\nWeapon: None";
+                            }
 
-                            textSprite.position.set(playerPos.x, playerPos.y + 2.5, playerPos.z); // 頭上に表示
-                            textSprite.scale.set(2, 2, 1); // サイズ調整
+                            // Add armor info
+                            const armorList = [];
+                            for (let i = 0; i < armor.length; i++) {
+                                if (armor[i]&& armor[i].getItem()) {
+                                    armorList.push(armor[i].getItem().name|| "Unknown");
+                                }
+                            }
+                            displayInfo += "\nArmor: ${armorList.length > 0 ? armorList.join(", ") : "None"}";
 
-                            // ゲームシーンに追加
-                            game$1.gameScene.add(textSprite);
+                            // Create a text label (similar to ESP rendering)
+                            const textGeometry = new THREE.TextGeometry(displayInfo, {
+                                font: new THREE.FontLoader().parse(fontData), // Use a loaded font
+                                size: 0.5, // Font size
+                                height: 0.1, // Thickness of the text
+                                curveSegments: 12, // Curve details
+                            });
 
-                            // テキストを削除して画面を更新
-                            setTimeout(() => game$1.gameScene.remove(textSprite), 0);
+                            const textMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red color for the text
+
+                            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+                            textMesh.position.set(pos.x, pos.y + 2.5, pos.z); // Position the nametag above the player
+
+                            // Add the text to the scene
+                            game$1.gameScene.add(textMesh);
+
+                            // Remove the text after the frame to avoid duplicating
+                            setTimeout(() => game$1.gameScene.remove(textMesh), 0);
                         }
                     };
                 } else {
-                    // NameTagが無効になったとき、描画を削除
-                    delete tickLoop["NameTag"];
+                    // Remove the nametag when disabled
+                    delete renderTickLoop["Nametag"];
                 }
             });
 
-            // 防具情報を取得する関数
-        function getArmorText(entity) {
-                let armorPieces = [];
-                const armorInventory = entity.inventory.armor;
-                for (let i = 0; i < armorInventory.length; i++) {
-                    const item = armorInventory[i];
-                    if (item) {
-                        armorPieces.push(item.name); // 防具の名前を取得
-                    } else {
-                        armorPieces.push("None"); // 防具がない場合は "None" を表示
-                    }
-                }
-                return armorPieces.join(", ");
-            }
-
-            // 武器情報を取得する関数
-            function getWeaponText(entity) {
-                const weaponItem = entity.inventory.getCurrentItem();
-                if (weaponItem) {
-                    return weaponItem.name; // 武器の名前を表示
-                }
-                return "None"; // 武器がない場合は "None"
-            }
 
 
 
