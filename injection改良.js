@@ -587,55 +587,6 @@ function modifyCode(text) {
                 }
             });
 
-            // Adding AutoAim Module
-            new Module("AutoAim", function(callback) {
-                if (callback) {
-                    tickLoop["AutoAim"] = function() {
-                        const entities = game$1.world.entitiesDump;
-                        let closestEntity = null;
-                        let closestDistance = Infinity;
-
-                        // Loop through all entities to find the nearest enemy
-                        for (const entity of entities.values()) {
-                            if (entity.id == player$1.id) continue; // Skip the player itself
-                            if (!(entity instanceof EntityPlayer) || entity.isInvisibleDump()) continue; // Only target visible players
-
-                            // Calculate the squared distance to avoid unnecessary square root calculations
-                            const distance = player$1.getDistanceSqToEntity(entity);
-                            if (distance < closestDistance) {
-                                closestDistance = distance;
-                                closestEntity = entity;
-                            }
-                        }
-
-                        // If a closest entity is found, adjust the player's aim
-                        if (closestEntity) {
-                            const playerPos = player$1.getEyePos(); // Player's eye position (view point)
-                            const targetPos = closestEntity.getEyePos(); // Target's eye position
-
-                            // Calculate the direction vector from the player to the target
-                            const deltaX = targetPos.x - playerPos.x;
-                            const deltaY = targetPos.y - playerPos.y;
-                            const deltaZ = targetPos.z - playerPos.z;
-
-                            // Calculate the yaw (horizontal) and pitch (vertical) angles to aim at the target
-                            const yaw = Math.atan2(deltaZ, deltaX) * (180 / Math.PI) - 90; // Convert radians to degrees
-                            const distanceXZ = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ); // Horizontal distance
-                            const pitch = -(Math.atan2(deltaY, distanceXZ) * (180 / Math.PI)); // Calculate pitch
-
-                            // Set the player's yaw and pitch to aim at the closest enemy
-                            player$1.yaw = yaw;
-                            player$1.pitch = pitch;
-                        }
-                    };
-                } else {
-                    // Disable AutoAim when the module is turned off
-                    delete tickLoop["AutoAim"];
-                }
-            });
-
-
-
 			new Module("Sprint", function() {});
 			const velocity = new Module("Velocity", function() {});
 			velocityhori = velocity.addoption("Horizontal", Number, 0);
