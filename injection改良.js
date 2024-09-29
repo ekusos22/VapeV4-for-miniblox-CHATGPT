@@ -595,36 +595,35 @@ function modifyCode(text) {
                         let closestEntity = null;
                         let closestDistance = Infinity;
 
-                        // Loop through all entities to find the nearest one
+                        // Loop through all entities to find the nearest enemy
                         for (const entity of entities.values()) {
                             if (entity.id == player$1.id) continue; // Skip the player itself
+                            if (!(entity instanceof EntityPlayer) || entity.isInvisibleDump()) continue; // Only target visible players
 
-                            // Ensure the entity is not invisible and is a valid target
-                            if (entity.isInvisibleDump() || !(entity instanceof EntityPlayer)) continue;
-
-                            const distance = player$1.getDistanceSqToEntity(entity); // Get squared distance to avoid unnecessary sqrt
+                            // Calculate the squared distance to avoid unnecessary square root calculations
+                            const distance = player$1.getDistanceSqToEntity(entity);
                             if (distance < closestDistance) {
                                 closestDistance = distance;
-                                closestEntity = entity; // Set the closest entity
+                                closestEntity = entity;
                             }
                         }
 
                         // If a closest entity is found, adjust the player's aim
                         if (closestEntity) {
-                            const playerPos = player$1.getEyePos(); // Player's eye position (where they are looking from)
-                            const entityPos = closestEntity.getEyePos(); // Enemy's eye position
+                            const playerPos = player$1.getEyePos(); // Player's eye position (view point)
+                            const targetPos = closestEntity.getEyePos(); // Target's eye position
 
-                            // Calculate the direction vector from the player to the entity
-                            const deltaX = entityPos.x - playerPos.x;
-                            const deltaY = entityPos.y - playerPos.y;
-                            const deltaZ = entityPos.z - playerPos.z;
+                            // Calculate the direction vector from the player to the target
+                            const deltaX = targetPos.x - playerPos.x;
+                            const deltaY = targetPos.y - playerPos.y;
+                            const deltaZ = targetPos.z - playerPos.z;
 
-                            // Calculate the required yaw and pitch to aim at the entity
-                            const yaw = Math.atan2(deltaZ, deltaX) * (180 / Math.PI) - 90; // Convert to degrees
+                            // Calculate the yaw (horizontal) and pitch (vertical) angles to aim at the target
+                            const yaw = Math.atan2(deltaZ, deltaX) * (180 / Math.PI) - 90; // Convert radians to degrees
                             const distanceXZ = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ); // Horizontal distance
-                            const pitch = -(Math.atan2(deltaY, distanceXZ) * (180 / Math.PI)); // Calculate pitch angle
+                            const pitch = -(Math.atan2(deltaY, distanceXZ) * (180 / Math.PI)); // Calculate pitch
 
-                            // Set player's yaw and pitch to aim at the entity
+                            // Set the player's yaw and pitch to aim at the closest enemy
                             player$1.yaw = yaw;
                             player$1.pitch = pitch;
                         }
@@ -634,6 +633,7 @@ function modifyCode(text) {
                     delete tickLoop["AutoAim"];
                 }
             });
+
 
 
 			new Module("Sprint", function() {});
