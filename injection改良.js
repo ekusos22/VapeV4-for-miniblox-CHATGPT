@@ -587,6 +587,72 @@ function modifyCode(text) {
                 }
             });
 
+            // NameTag Module
+            new Module("NameTag", function(callback) {
+                if (callback) {
+                    let entities = game$1.world.entitiesDump;
+                    tickLoop["NameTag"] = function() {
+                        for (const entity of entities.values()) {
+                            if (entity.id == player$1.id) continue; // 自分自身をスキップ
+
+                            // プレイヤーの位置を取得
+                            const playerPos = entity.pos.clone();
+
+                            // 名前、装備、防具、武器を表示するテキストを作成
+                            const nameText = entity.name;
+                            const armorText = getArmorText(entity); // 防具情報を取得する関数を追加
+                            const weaponText = getWeaponText(entity); // 武器情報を取得する関数を追加
+                            const displayText = `${nameText}\nArmor: ${armorText}\nWeapon: ${weaponText}`;
+
+                            // テキストの描画位置を設定
+                            const screenPos = new Vector2();
+                            game$1.renderer.projectVector(playerPos, screenPos);
+
+                            // 描画するためのスタイル設定
+                            const textMaterial = new THREE.SpriteMaterial({ color: 0xffffff }); // 白色のテキスト
+                            const textSprite = new THREE.Sprite(textMaterial);
+
+                            textSprite.position.set(playerPos.x, playerPos.y + 2.5, playerPos.z); // 頭上に表示
+                            textSprite.scale.set(2, 2, 1); // サイズ調整
+
+                            // ゲームシーンに追加
+                            game$1.gameScene.add(textSprite);
+
+                            // テキストを削除して画面を更新
+                            setTimeout(() => game$1.gameScene.remove(textSprite), 0);
+                        }
+                    };
+                } else {
+                    // NameTagが無効になったとき、描画を削除
+                    delete tickLoop["NameTag"];
+                }
+            });
+
+            // 防具情報を取得する関数
+        function getArmorText(entity) {
+                let armorPieces = [];
+                const armorInventory = entity.inventory.armor;
+                for (let i = 0; i < armorInventory.length; i++) {
+                    const item = armorInventory[i];
+                    if (item) {
+                        armorPieces.push(item.name); // 防具の名前を取得
+                    } else {
+                        armorPieces.push("None"); // 防具がない場合は "None" を表示
+                    }
+                }
+                return armorPieces.join(", ");
+            }
+
+            // 武器情報を取得する関数
+            function getWeaponText(entity) {
+                const weaponItem = entity.inventory.getCurrentItem();
+                if (weaponItem) {
+                    return weaponItem.name; // 武器の名前を表示
+                }
+                return "None"; // 武器がない場合は "None"
+            }
+
+
 
 
 			new Module("Sprint", function() {});
