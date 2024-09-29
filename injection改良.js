@@ -596,55 +596,7 @@ function modifyCode(text) {
                     }
                 }
             });
-
-
-            // Adding Tracker Module
-            new Module("Tracker", function(callback) {
-                let line; // Store the line object globally
-
-                if (callback) {
-                    renderTickLoop["Tracker"] = function() {
-                        if (line) game$1.gameScene.remove(line); // Remove the previous line
-
-                        // Get player's position and screen center
-                        const playerPos = player$1.pos.clone();
-                        const screenCenter = controls.position.clone();
-
-                        // Calculate the 2D position of the player on the screen
-                        const playerScreenPos = new Vector2();
-                        game$1.renderer.projectVector(playerPos, playerScreenPos);
-
-                        // Define the line color
-                        const lineColor = new THREE.Color(1, 0, 0); // Red color
-
-                        // Create a material for the line
-                        const lineMaterial = new THREE.LineBasicMaterial({ color: lineColor });
-
-                        // Create a geometry for the line
-                        const lineGeometry = new THREE.Geometry();
-                        lineGeometry.vertices.push(
-                            new THREE.Vector3(playerPos.x, playerPos.y, playerPos.z), // Player position
-                            new THREE.Vector3(screenCenter.x, screenCenter.y, screenCenter.z) // Screen center
-                        );
-
-                        // Create the line object
-                        line = new THREE.Line(lineGeometry, lineMaterial);
-
-                        // Add the line to the scene
-                        game$1.gameScene.add(line);
-                    };
-                } else {
-                    // Remove the tracker when disabled
-                    delete renderTickLoop["Tracker"];
-                    if (line) {
-                        game$1.gameScene.remove(line); // Ensure the line is removed when tracker is disabled
-                        line = null; // Clear the reference to avoid memory leaks
-                    }
-                }
-            });
-
-
-
+	    
 
 			new Module("Sprint", function() {});
 			const velocity = new Module("Velocity", function() {});
