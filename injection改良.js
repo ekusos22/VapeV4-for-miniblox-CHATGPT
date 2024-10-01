@@ -543,7 +543,6 @@ function modifyCode(text) {
 				} else delete tickLoop["AutoClicker"];
 			});
 
-			// Adding ESP Module
             new Module("ESP", function(callback) {
                 if (callback) {
                     let entities = game$1.world.entitiesDump;
@@ -552,19 +551,19 @@ function modifyCode(text) {
                         for (const entity of entities.values()) {
                             if (entity.id == player$1.id) continue; // Skip the player itself
 
-                            // Highlight the entity with red box
-                            for(const mesh in entity.mesh.meshes) {
+                            // Highlight the entity with a red box
+                            for (const mesh in entity.mesh.meshes) {
                                 entity.mesh.meshes[mesh].material.depthTest = false;
                                 entity.mesh.meshes[mesh].material.transparent = true;
                                 entity.mesh.meshes[mesh].material.opacity = 0.5;
-                                entity.mesh.meshes[mesh].material.color.set(255, 0, 0);
+                                entity.mesh.meshes[mesh].material.color.set(255, 0, 0); // Red color
                                 entity.mesh.meshes[mesh].renderOrder = 6;
                             }
 
                             // Armor and Cape
-                            for(const mesh in entity.mesh.armorMesh) {
+                            for (const mesh in entity.mesh.armorMesh) {
                                 entity.mesh.armorMesh[mesh].material.depthTest = false;
-                                entity.mesh.armorMesh[mesh].material.renderOrder = 4;
+                                entity.mesh.armorMesh[mesh].renderOrder = 4;
                             }
 
                             if (entity.mesh.capeMesh) {
@@ -576,8 +575,8 @@ function modifyCode(text) {
                 } else {
                     // Remove ESP highlights when module is disabled
                     delete tickLoop["ESP"];
-                    for(const entity of game$1.world.entitiesDump.values()) {
-                        for(const mesh in entity.mesh.meshes) {
+                    for (const entity of game$1.world.entitiesDump.values()) {
+                        for (const mesh in entity.mesh.meshes) {
                             entity.mesh.meshes[mesh].material.depthTest = true;
                             entity.mesh.meshes[mesh].material.transparent = false;
                             entity.mesh.meshes[mesh].material.opacity = 1;
@@ -586,6 +585,7 @@ function modifyCode(text) {
                     }
                 }
             });
+
 
 			new Module("Sprint", function() {});
 			const velocity = new Module("Velocity", function() {});
