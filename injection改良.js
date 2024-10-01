@@ -543,68 +543,49 @@ function modifyCode(text) {
 				} else delete tickLoop["AutoClicker"];
 			});
 
+			// Adding ESP Module
             new Module("ESP", function(callback) {
-			    if (callback) {
-			        let entities = game$1.world.entitiesDump;
-			        let killauraRange = 1000; // Set the unlimited range (or any large value)
+                if (callback) {
+                    let entities = game$1.world.entitiesDump;
+                    tickLoop["ESP"] = function() {
+                        // Loop through all entities
+                        for (const entity of entities.values()) {
+                            if (entity.id == player$1.id) continue; // Skip the player itself
 
-			        tickLoop["ESP"] = function() {
-			            // Loop through all entities
-			            for (const entity of entities.values()) {
-			                if (entity.id == player$1.id) continue; // Skip the player itself
+                            // Highlight the entity with red box
+                            for(const mesh in entity.mesh.meshes) {
+                                entity.mesh.meshes[mesh].material.depthTest = false;
+                                entity.mesh.meshes[mesh].material.transparent = true;
+                                entity.mesh.meshes[mesh].material.opacity = 0.5;
+                                entity.mesh.meshes[mesh].material.color.set(255, 0, 0);
+                                entity.mesh.meshes[mesh].renderOrder = 6;
+                            }
 
-			                // Check if the entity is within the Killaura range (unlimited range)
-			                let isInKillauraRange = player$1.getDistanceSqToEntity(entity) < (killauraRange * killauraRange);
+                            // Armor and Cape
+                            for(const mesh in entity.mesh.armorMesh) {
+                                entity.mesh.armorMesh[mesh].material.depthTest = false;
+                                entity.mesh.armorMesh[mesh].material.renderOrder = 4;
+                            }
 
-			                if (isInKillauraRange) {
-			                    // Highlight the entity in red
-			                    for (const mesh in entity.mesh.meshes) {
-			                        let material = entity.mesh.meshes[mesh].material;
-
-			                        // Set color to red
-			                        material.color = new THREE.Color(1, 0, 0); // Red color
-			                        material.transparent = true;
-			                        material.opacity = 0.5;  // Adjust transparency
-			                        material.blending = THREE.NormalBlending;  // Set blending mode
-			                        material.depthTest = false;  // Disable depth testing
-
-			                        material.needsUpdate = true;  // Ensure material updates
-			                        entity.mesh.meshes[mesh].renderOrder = 6;  // Render on top
-			                    }
-
-			                    // Armor and Cape
-			                    for (const mesh in entity.mesh.armorMesh) {
-			                        entity.mesh.armorMesh[mesh].material.depthTest = false;
-			                        entity.mesh.armorMesh[mesh].renderOrder = 4;
-			                    }
-
-			                    if (entity.mesh.capeMesh) {
-			                        entity.mesh.capeMesh.children[0].material.depthTest = false;
-			                        entity.mesh.capeMesh.children[0].renderOrder = 5;
-			                    }
-			                }
-			            }
-			        };
-			    } else {
-			        // Remove ESP highlights when module is disabled
-			        delete tickLoop["ESP"];
-			        for (const entity of game$1.world.entitiesDump.values()) {
-			            for (const mesh in entity.mesh.meshes) {
-			                let material = entity.mesh.meshes[mesh].material;
-
-			                // Reset to default settings
-			                material.color = new THREE.Color(1, 1, 1);  // Set back to default color
-			                material.transparent = false;
-			                material.opacity = 1;  // Reset transparency
-			                material.depthTest = true;  // Enable depth testing again
-			                material.needsUpdate = true;
-			                entity.mesh.meshes[mesh].renderOrder = 0;  // Reset render order
-			            }
-			        }
-			    }
-			});
-
-
+                            if (entity.mesh.capeMesh) {
+                                entity.mesh.capeMesh.children[0].material.depthTest = false;
+                                entity.mesh.capeMesh.children[0].renderOrder = 5;
+                            }
+                        }
+                    };
+                } else {
+                    // Remove ESP highlights when module is disabled
+                    delete tickLoop["ESP"];
+                    for(const entity of game$1.world.entitiesDump.values()) {
+                        for(const mesh in entity.mesh.meshes) {
+                            entity.mesh.meshes[mesh].material.depthTest = true;
+                            entity.mesh.meshes[mesh].material.transparent = false;
+                            entity.mesh.meshes[mesh].material.opacity = 1;
+                            entity.mesh.meshes[mesh].renderOrder = 0;
+                        }
+                    }
+                }
+            });
 
 			new Module("Sprint", function() {});
 			const velocity = new Module("Velocity", function() {});
