@@ -555,7 +555,7 @@ function modifyCode(text) {
                             for (const mesh in entity.mesh.meshes) {
                                 entity.mesh.meshes[mesh].material.depthTest = false;
                                 entity.mesh.meshes[mesh].material.transparent = true;
-                                entity.mesh.meshes[mesh].material.opacity = 0.5;
+                                entity.mesh.meshes[mesh].material.opacity = 0;
                                 entity.mesh.meshes[mesh].material.color.set(255, 0, 0); // Red color
                                 entity.mesh.meshes[mesh].renderOrder = 6;
                             }
