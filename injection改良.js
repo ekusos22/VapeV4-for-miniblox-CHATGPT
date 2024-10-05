@@ -587,6 +587,41 @@ function modifyCode(text) {
                 }
             });
 
+			new Module("BehindWallAttack", function(callback) {
+			    if (callback) {
+			        tickLoop["BehindWallAttack"] = function() {
+			            const entities = game$1.world.entitiesDump;
+			            for (const entity of entities.values()) {
+			                if (entity.id == player$1.id) continue; // Skip self
+			                const distance = player$1.getDistanceSqToEntity(entity);
+
+			                // Check if entity is within range (adjust the range as needed)
+			                if (distance < 16) {
+			                    // Attack the entity behind the wall, skipping visibility check
+			                    const box = entity.getEntityBoundingBox();
+			                    const hitVec = player$1.getEyePos().clone().clamp(box.min, box.max);
+
+			                    // Perform the attack
+			                    playerControllerMP.syncItemDump();
+			                    ClientSocket.sendPacket(new SPacketUseEntity({
+			                        id: entity.id,
+			                        action: 1,
+			                        hitVec: new PBVector3({
+			                            x: hitVec.x,
+			                            y: hitVec.y,
+			                            z: hitVec.z
+			                        })
+			                    }));
+			                    player$1.attackDump(entity);
+			                }
+			            }
+			        };
+			    } else {
+			        delete tickLoop["BehindWallAttack"];
+			    }
+			});
+
+
 			new Module("Sprint", function() {});
 			const velocity = new Module("Velocity", function() {});
 			velocityhori = velocity.addoption("Horizontal", Number, 0);
