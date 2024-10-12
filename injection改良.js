@@ -1198,3 +1198,78 @@ function modifyCode(text) {
 		execute(publicUrl);
 	}
 })();
+
+(function() {
+    'use strict';
+
+    // Create GUI container
+    let guiVisible = false;
+    const gui = document.createElement('div');
+    gui.style = `
+        display: none;
+        position: fixed;
+        top: 10px;  /* Close to the top */
+        left: 50%;
+        transform: translate(-50%, 0);  /* Center horizontally */
+        width: 50vw;  /* Responsive width, adjusts based on screen size */
+        max-width: 400px;  /* Max width to avoid being too large */
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        border-radius: 10px;
+        z-index: 9999;
+        font-family: Arial, sans-serif;
+    `;
+    document.body.appendChild(gui);
+
+    // Toggle GUI on ^ key press
+    document.addEventListener('keydown', function(event) {
+        if (event.key === '^') {  // Check for ^ key press
+            guiVisible = !guiVisible;
+            gui.style.display = guiVisible ? 'block' : 'none';
+        }
+    });
+
+    // Create button container with grid layout
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style = `
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);  /* 3 buttons per row */
+        gap: 10px;
+    `;
+    gui.appendChild(buttonContainer);
+
+    // List of modules (these names must match the names used in your script)
+    const commands = [
+        'AutoClicker', 'BehindWallAttack', 'Sprint', 'Velocity', 'WTap', 'AntiFall', 'Killaura', 'Fly', 'InvWalk',
+        'KeepSprint', 'NoSlowdown', 'NoFall', 'Speed', 'Step', 'Chams', 'TextGUI', 'AutoRespawn', 'Breaker',
+        'AutoArmor', 'AutoCraft', 'ChestSteal', 'Scaffold', 'Timer', 'Phase', 'AntiBan', 'AutoRejoin', 'AutoQueue',
+        'AutoVote', 'ChatDisabler', 'FilterBypass', 'SurvivalMode'
+    ];
+
+    // Function to toggle module on button press
+    function toggleCommand(command, buttonElement) {
+        const module = window[storeName]?.modules[command];  // Access the module from your existing script
+        if (module) {
+            module.toggle();  // Toggle the module on or off
+            buttonElement.style.backgroundColor = module.enabled ? '#008CBA' : '#444';  // Change button color based on status
+        }
+    }
+
+    // Create buttons for each command and add to the grid
+    commands.forEach(command => {
+        const button = document.createElement('button');
+        button.textContent = command;
+        button.style = `
+            padding: 8px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        `;
+        button.addEventListener('click', () => toggleCommand(command, button));
+        buttonContainer.appendChild(button);
+    });
+})();
