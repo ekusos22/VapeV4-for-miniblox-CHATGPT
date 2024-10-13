@@ -1198,7 +1198,7 @@ function modifyCode(text) {
 		execute(publicUrl);
 	}
 
-	// GUI toggle key listener
+// GUI toggle key listener
 	let guiVisible = false;
 	window.addEventListener('keydown', function(event) {
 	    if (event.key === '^') {
@@ -1211,8 +1211,12 @@ function modifyCode(text) {
 	    const guiElement = document.getElementById('cheatGui');
 	    if (guiVisible) {
 	        guiElement.style.display = 'block';
-		} else {
+	        // Make the mouse cursor visible
+	        document.body.style.cursor = 'default';
+	    } else {
 	        guiElement.style.display = 'none';
+	        // Hide the mouse cursor (set back to game controls)
+	        document.body.style.cursor = 'none';
 	    }
 	}
 
@@ -1234,11 +1238,12 @@ function modifyCode(text) {
 	        display: grid;
 	        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 	        gap: 10px;
+	        cursor: default; /* Ensure cursor is shown over the GUI */
 	    `;
 	    document.body.appendChild(gui);
 
 	    // List of functions
-	const functions = [
+	    const functions = [
 	        'autoclicker', 'behindwallattack', 'sprint', 'velocity', 'wtap', 'antifall',
 	        'killaura', 'fly', 'invwalk', 'keepsprint', 'noslowdown', 'nofall', 'speed',
 	        'step', 'chams', 'textgui', 'autorespawn', 'breaker', 'autoarmor', 'autocraft',
