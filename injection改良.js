@@ -1197,6 +1197,98 @@ function modifyCode(text) {
 	else {
 		execute(publicUrl);
 	}
-})();
 
+	// GUI toggle key listener
+	let guiVisible = false;
+	window.addEventListener('keydown', function(event) {
+	    if (event.key === '^') {
+	        toggleGUI();
+	    }
+	});
 
+	function toggleGUI() {
+	    guiVisible = !guiVisible;
+	    const guiElement = document.getElementById('cheatGui');
+	    if (guiVisible) {
+	        guiElement.style.display = 'block';
+		} else {
+	        guiElement.style.display = 'none';
+	    }
+	}
+
+	// Create GUI
+	function createGUI() {
+	    const gui = document.createElement('div');
+	    gui.id = 'cheatGui';
+	    gui.style.cssText = `
+	        position: fixed;
+	        top: 10px;
+	        left: 50%;
+	        transform: translateX(-50%);
+	        width: 90%;
+	        background: rgba(0, 0, 0, 0.7);
+	        border-radius: 10px;
+	        padding: 10px;
+	        display: none;
+	        z-index: 9999;
+	        display: grid;
+	        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+	        gap: 10px;
+	    `;
+	    document.body.appendChild(gui);
+
+	    // List of functions
+	const functions = [
+	        'autoclicker', 'behindwallattack', 'sprint', 'velocity', 'wtap', 'antifall',
+	        'killaura', 'fly', 'invwalk', 'keepsprint', 'noslowdown', 'nofall', 'speed',
+	        'step', 'chams', 'textgui', 'autorespawn', 'breaker', 'autoarmor', 'autocraft',
+	        'cheststeal', 'scaffold', 'timer', 'phase', 'antiban', 'autorejoin', 'autoqueue',
+	        'autovote', 'chatdisabler', 'fillterbypass', 'survivalmode', 'configimport', 'configexport'
+	    ];
+
+	    functions.forEach(func => {
+	        const button = document.createElement('button');
+	        button.innerText = func;
+	        button.style.cssText = `
+	            width: 100%;
+	            padding: 10px;
+	            background-color: red;
+	            border: none;
+	            color: white;
+	            cursor: pointer;
+	            transition: background-color 0.3s;
+	        `;
+	        button.onmouseover = function() {
+	            this.style.backgroundColor = 'orange';
+	        };
+	        button.onmouseout = function() {
+	            this.style.backgroundColor = this.isEnabled ? 'green' : 'red';
+	        };
+	        button.onclick = function() {
+	            toggleFunction(func);
+	            this.isEnabled = !this.isEnabled;
+	            this.style.backgroundColor = this.isEnabled ? 'green' : 'red';
+	        };
+	        gui.appendChild(button);
+	    });
+	}
+
+	function toggleFunction(func) {
+	    // Toggle the specific function
+	    const module = getModule(func);
+	    if (module) module.toggle();
+	}
+
+	// Config import/export handling
+	function handleConfigImport() {
+	    getModule('configimport').toggle();
+	}
+
+	function handleConfigExport() {
+	    getModule('configexport').toggle();
+	}
+
+	// Initialize the GUI on page load
+	window.addEventListener('load', createGUI);
+
+})();	
