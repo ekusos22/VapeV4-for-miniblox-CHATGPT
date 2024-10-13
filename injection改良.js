@@ -1198,7 +1198,7 @@ function modifyCode(text) {
 		execute(publicUrl);
 	}
 
-// GUI toggle key listener
+	// GUI toggle key listener
 	let guiVisible = false;
 	window.addEventListener('keydown', function(event) {
 	    if (event.key === '^') {
@@ -1211,12 +1211,8 @@ function modifyCode(text) {
 	    const guiElement = document.getElementById('cheatGui');
 	    if (guiVisible) {
 	        guiElement.style.display = 'block';
-	        // Make the mouse cursor visible
-	        document.body.style.cursor = 'default';
 	    } else {
 	        guiElement.style.display = 'none';
-	        // Hide the mouse cursor (set back to game controls)
-	        document.body.style.cursor = 'none';
 	    }
 	}
 
@@ -1230,7 +1226,7 @@ function modifyCode(text) {
 	        left: 50%;
 	        transform: translateX(-50%);
 	        width: 90%;
-	        background: rgba(0, 0, 0, 0.7);
+	        background: rgba(0, 0, 0, 0.5); /* Translucent background */
 	        border-radius: 10px;
 	        padding: 10px;
 	        display: none;
@@ -1238,7 +1234,6 @@ function modifyCode(text) {
 	        display: grid;
 	        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 	        gap: 10px;
-	        cursor: default; /* Ensure cursor is shown over the GUI */
 	    `;
 	    document.body.appendChild(gui);
 
@@ -1269,7 +1264,8 @@ function modifyCode(text) {
 	        button.onmouseout = function() {
 	            this.style.backgroundColor = this.isEnabled ? 'green' : 'red';
 	        };
-	        button.onclick = function() {
+			button.onclick = function() {
+	            console.log(`Button pressed: ${func}`); // Log when the button is pressed
 	            toggleFunction(func);
 	            this.isEnabled = !this.isEnabled;
 	            this.style.backgroundColor = this.isEnabled ? 'green' : 'red';
@@ -1279,21 +1275,18 @@ function modifyCode(text) {
 	}
 
 	function toggleFunction(func) {
-	    // Toggle the specific function
+		    // Toggle the specific function
 	    const module = getModule(func);
-	    if (module) module.toggle();
-	}
-
-	// Config import/export handling
-	function handleConfigImport() {
-	    getModule('configimport').toggle();
-	}
-
-	function handleConfigExport() {
-	    getModule('configexport').toggle();
+	    if (module) {
+		console.log(`Toggling function: ${func}`); // Log when the function is toggled
+	        module.toggle();
+	    } else {
+	        console.log(`Function not found: ${func}`); // Log if the function is not found
+	    }
 	}
 
 	// Initialize the GUI on page load
 	window.addEventListener('load', createGUI);
 
-})();	
+
+})();
