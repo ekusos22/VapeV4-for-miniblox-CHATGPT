@@ -182,8 +182,29 @@ function modifyCode(text) {
 	            const keyBound = modules[module].bind ? modules[module].bind : "None"; // Get the key bound or display "None"
 	            drawText(ctx$3, \`\${module} : \${keyBound}\`, posX + 6, posY + 12 + ((textguisize[1] + 3) * offset), textguisize[1] + "px " + textguifont[1], \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`, "left", "top", 1, textguishadow[1]);
 	        }
+
+	        // Drawing the logo in the bottom right corner with a rainbow glow
+	        const img = new Image();
+	        img.src = "https://raw.githubusercontent.com/7GrandDadPGN/VapeForMiniblox/refs/heads/main/assets/logo.png?raw=true";
+	        img.onload = function() {
+	            const imgWidth = 80;  // Set the desired width of the image
+	            const imgHeight = 40;  // Set the desired height of the image
+	            const screenWidth = window.innerWidth; // Get screen width
+	            const screenHeight = window.innerHeight; // Get screen height
+	            const imageX = screenWidth - imgWidth - 20;  // Position 20px from the right
+	            const imageY = screenHeight - imgHeight - 20; // Position 20px from the bottom
+
+	            // Apply rainbow glow effect
+	            ctx$3.save();
+	            const glowColor = \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`; // Rainbow color effect
+	            ctx$3.shadowColor = glowColor;
+	            ctx$3.shadowBlur = 15;
+	            ctx$3.drawImage(img, imageX, imageY, imgWidth, imgHeight); // Draw image in bottom right corner
+	            ctx$3.restore();
+			};
 	    }
 	`);
+
 
 
 	// HOOKS
