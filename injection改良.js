@@ -155,34 +155,36 @@ function modifyCode(text) {
 
 	// TEXT GUI
 	addReplacement('(this.drawSelectedItemStack(),this.drawHintBox())', `
-		if (ctx$3 && enabledModules["TextGUI"]) {
-			const colorOffset = (Date.now() / 4000);
-			const posX = 15;
-			const posY = 17;
-			ctx$3.imageSmoothingEnabled = true;
-			ctx$3.imageSmoothingQuality = "high";
-			drawImage(ctx$3, textureManager.vapeTexture.image, posX, posY, 80, 21, \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`);
-			drawImage(ctx$3, textureManager.v4Texture.image, posX + 81, posY + 1, 33, 18);
+	    if (ctx$3 && enabledModules["TextGUI"]) {
+	        const colorOffset = (Date.now() / 4000);
+	        const posX = 15;
+	        const posY = 17;
+	        ctx$3.imageSmoothingEnabled = true;
+	        ctx$3.imageSmoothingQuality = "high";
+	        drawImage(ctx$3, textureManager.vapeTexture.image, posX, posY, 80, 21, \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`);
+	        drawImage(ctx$3, textureManager.v4Texture.image, posX + 81, posY + 1, 33, 18);
 
-			let offset = 0;
-			let stringList = [];
-			for(const [module, value] of Object.entries(enabledModules)) {
-				if (!value || module == "TextGUI") continue;
-				stringList.push(module);
-			}
+	        let offset = 0;
+	        let stringList = [];
+	        for(const [module, value] of Object.entries(enabledModules)) {
+	            if (!value || module == "TextGUI") continue;
+	            stringList.push(module);
+	        }
 
-			stringList.sort(function(a, b) {
-				const compA = ctx$3.measureText(a).width;
-				const compB = ctx$3.measureText(b).width;
-				return compA < compB ? 1 : -1;
-			});
+	        stringList.sort(function(a, b) {
+	            const compA = ctx$3.measureText(a).width;
+	            const compB = ctx$3.measureText(b).width;
+	            return compA < compB ? 1 : -1;
+	        });
 
-			for(const module of stringList) {
-				offset++;
-				drawText(ctx$3, module, posX + 6, posY + 12 + ((textguisize[1] + 3) * offset), textguisize[1] + "px " + textguifont[1], \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`, "left", "top", 1, textguishadow[1]);
-			}
-		}
+	        for(const module of stringList) {
+	            offset++;
+	            const keyBound = modules[module].bind ? modules[module].bind : "None"; // Get the key bound or display "None"
+	            drawText(ctx$3, \`\${module} : \${keyBound}\`, posX + 6, posY + 12 + ((textguisize[1] + 3) * offset), textguisize[1] + "px " + textguifont[1], \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`, "left", "top", 1, textguishadow[1]);
+	        }
+	    }
 	`);
+
 
 	// HOOKS
 	addReplacement('+=$*rt+_*nt}', `
@@ -1197,4 +1199,5 @@ function modifyCode(text) {
 	else {
 		execute(publicUrl);
 	}
+
 })();
