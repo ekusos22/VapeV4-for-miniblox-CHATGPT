@@ -161,8 +161,30 @@ function modifyCode(text) {
 	        const posY = 17;
 	        ctx$3.imageSmoothingEnabled = true;
 	        ctx$3.imageSmoothingQuality = "high";
-	        drawImage(ctx$3, textureManager.vapeTexture.image, posX, posY, 80, 21, \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`);
-	        drawImage(ctx$3, textureManager.v4Texture.image, posX + 81, posY + 1, 33, 18);
+
+	        // Transparent, futuristic background for the GUI
+	        ctx$3.fillStyle = 'rgba(25, 25, 25, 0.6)'; // Dark, semi-transparent background
+	        ctx$3.strokeStyle = \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`; // Futuristic glowing border
+	        ctx$3.lineWidth = 2; // Border thickness
+
+	        // Draw rounded rectangle for the module list background
+	        function drawRoundedRect(x, y, width, height, radius) {
+	            ctx$3.beginPath();
+	            ctx$3.moveTo(x + radius, y);
+	            ctx$3.lineTo(x + width - radius, y);
+	            ctx$3.quadraticCurveTo(x + width, y, x + width, y + radius);
+	            ctx$3.lineTo(x + width, y + height - radius);
+	            ctx$3.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+	            ctx$3.lineTo(x + radius, y + height);
+	            ctx$3.quadraticCurveTo(x, y + height, x, y + height - radius);
+	            ctx$3.lineTo(x, y + radius);
+	            ctx$3.quadraticCurveTo(x, y, x + radius, y);
+	            ctx$3.closePath();
+	            ctx$3.fill();
+	            ctx$3.stroke(); // Glowing outline
+	        }
+
+	        drawRoundedRect(10, 10, 250, 300, 15); // Background for module list
 
 	        let offset = 0;
 	        let stringList = [];
@@ -177,39 +199,36 @@ function modifyCode(text) {
 	            return compA < compB ? 1 : -1;
 	        });
 
+	        // Text settings: futuristic glowing text
 	        for(const module of stringList) {
 	            offset++;
-	            // Get the key bound (convert to uppercase), if no key is bound, don't show the key part
 	            const keyBound = modules[module].bind ? \`:\${modules[module].bind.toUpperCase()}\` : ""; 
-	            drawText(ctx$3, \`\${module}\${keyBound}\`, posX + 6, posY + 12 + ((textguisize[1] + 3) * offset), textguisize[1] + "px " + textguifont[1], \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`, "left", "top", 1, textguishadow[1]);
+	            ctx$3.shadowColor = \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`;
+	            ctx$3.shadowBlur = 10; // Soft glow effect for text
+	            drawText(ctx$3, \`\${module}\${keyBound}\`, posX + 20, posY + 12 + ((textguisize[1] + 3) * offset), textguisize[1] + "px " + textguifont[1], \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`, "left", "top", 1, textguishadow[1]);
 	        }
 
-	        // Drawing the top-right logo as usual
-	        drawImage(ctx$3, textureManager.vapeTexture.image, screenWidth - 80 - 20, 20, 80, 21, \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`);
-
-	        // Drawing the bottom-right logo in the forefront
+	        // Drawing the bottom-right logo in the forefront with a futuristic glow
 	        const img = new Image();
 	        img.src = "https://raw.githubusercontent.com/7GrandDadPGN/VapeForMiniblox/refs/heads/main/assets/logo.png?raw=true";
 	        img.onload = function() {
-	            const imgWidth = 80;  // Set the desired width of the image
-	            const imgHeight = 40;  // Set the desired height of the image
-	            const screenWidth = window.innerWidth; // Get screen width
-	            const screenHeight = window.innerHeight; // Get screen height
-	            const imageX = screenWidth - imgWidth - 20;  // Position 20px from the right
-	            const imageY = screenHeight - imgHeight - 20; // Position 20px from the bottom
+	            const imgWidth = 80;
+	            const imgHeight = 40;
+	            const screenWidth = window.innerWidth;
+	            const screenHeight = window.innerHeight;
+	            const imageX = screenWidth - imgWidth - 20;
+	            const imageY = screenHeight - imgHeight - 20;
 
-	            // Ensure it's drawn last and always on top
+	            // Apply rainbow glow effect to the image
 	            ctx$3.save();
-	            const glowColor = \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`; // Rainbow color effect
+	            const glowColor = \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`; 
 	            ctx$3.shadowColor = glowColor;
 	            ctx$3.shadowBlur = 15;
-	            ctx$3.drawImage(img, imageX, imageY, imgWidth, imgHeight); // Draw image in bottom-right corner
+	            ctx$3.drawImage(img, imageX, imageY, imgWidth, imgHeight);
 	            ctx$3.restore();
 	        };
 	    }
 	`);
-
-
 
 
 
