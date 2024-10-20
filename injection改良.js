@@ -155,60 +155,56 @@ function modifyCode(text) {
 
 	// TEXT GUI
 	addReplacement('(this.drawSelectedItemStack(),this.drawHintBox())', `
-    if (ctx$3 && enabledModules["TextGUI"]) {
-        const colorOffset = (Date.now() / 4000);
-        const posX = 15;
-        const posY = 17;
-        ctx$3.imageSmoothingEnabled = true;
-        ctx$3.imageSmoothingQuality = "high";
-        drawImage(ctx$3, textureManager.vapeTexture.image, posX, posY, 80, 21, \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`);
-        drawImage(ctx$3, textureManager.v4Texture.image, posX + 81, posY + 1, 33, 18);
+	    if (ctx$3 && enabledModules["TextGUI"]) {
+	        const colorOffset = (Date.now() / 4000);
+	        const posX = 15;
+	        const posY = 17;
+	        ctx$3.imageSmoothingEnabled = true;
+	        ctx$3.imageSmoothingQuality = "high";
+	        drawImage(ctx$3, textureManager.vapeTexture.image, posX, posY, 80, 21, \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`);
+	        drawImage(ctx$3, textureManager.v4Texture.image, posX + 81, posY + 1, 33, 18);
 
-        let offset = 0;
-        let stringList = [];
-        for(const [module, value] of Object.entries(enabledModules)) {
-            if (!value || module == "TextGUI") continue;
-            stringList.push(module);
-        }
+	        let offset = 0;
+	        let stringList = [];
+	        for(const [module, value] of Object.entries(enabledModules)) {
+	            if (!value || module == "TextGUI") continue;
+	            stringList.push(module);
+	        }
 
-        stringList.sort(function(a, b) {
-            const compA = ctx$3.measureText(a).width;
-            const compB = ctx$3.measureText(b).width;
-            return compA < compB ? 1 : -1;
-        });
+	        stringList.sort(function(a, b) {
+	            const compA = ctx$3.measureText(a).width;
+	            const compB = ctx$3.measureText(b).width;
+	            return compA < compB ? 1 : -1;
+	        });
 
-        for(const module of stringList) {
-            offset++;
-            // Get the key bound (convert to uppercase), if no key is bound, don't show the key part
-            const keyBound = modules[module].bind ? \`:\${modules[module].bind.toUpperCase()}\` : ""; 
-            drawText(ctx$3, \`\${module}\${keyBound}\`, posX + 6, posY + 12 + ((textguisize[1] + 3) * offset), textguisize[1] + "px " + textguifont[1], \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`, "left", "top", 1, textguishadow[1]);
-        }
+	        for(const module of stringList) {
+	            offset++;
+	            // Get the key bound (convert to uppercase), if no key is bound, display only the module name
+	            const keyBound = modules[module].bind ? \`:\${modules[module].bind.toUpperCase()}\` : ""; 
+	            drawText(ctx$3, \`\${module}\${keyBound}\`, posX + 6, posY + 12 + ((textguisize[1] + 3) * offset), textguisize[1] + "px " + textguifont[1], \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`, "left", "top", 1, textguishadow[1]);
+	        }
 
-        // Drawing the top-right logo as usual
-        drawImage(ctx$3, textureManager.vapeTexture.image, screenWidth - 80 - 20, 20, 80, 21, \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`);
+	        // Drawing the logo in the bottom right corner with a rainbow glow
+	        const img = new Image();
+	        img.src = "https://raw.githubusercontent.com/7GrandDadPGN/VapeForMiniblox/refs/heads/main/assets/logo.png?raw=true";
+	        img.onload = function() {
+	            const imgWidth = 80;  // Set the desired width of the image
+	            const imgHeight = 40;  // Set the desired height of the image
+	            const screenWidth = window.innerWidth; // Get screen width
+	            const screenHeight = window.innerHeight; // Get screen height
+	            const imageX = screenWidth - imgWidth - 20;  // Position 20px from the right
+	            const imageY = screenHeight - imgHeight - 20; // Position 20px from the bottom
 
-        // Drawing the bottom-right logo in the forefront
-        const img = new Image();
-        img.src = "https://raw.githubusercontent.com/7GrandDadPGN/VapeForMiniblox/refs/heads/main/assets/logo.png?raw=true";
-        img.onload = function() {
-            const imgWidth = 80;  // Set the desired width of the image
-            const imgHeight = 40;  // Set the desired height of the image
-            const screenWidth = window.innerWidth; // Get screen width
-            const screenHeight = window.innerHeight; // Get screen height
-            const imageX = screenWidth - imgWidth - 20;  // Position 20px from the right
-            const imageY = screenHeight - imgHeight - 20; // Position 20px from the bottom
-
-            // Ensure it's drawn last and always on top
-            ctx$3.save();
-            const glowColor = \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`; // Rainbow color effect
-            ctx$3.shadowColor = glowColor;
-            ctx$3.shadowBlur = 15;
-            ctx$3.drawImage(img, imageX, imageY, imgWidth, imgHeight); // Draw image in bottom-right corner
-            ctx$3.restore();
-        };
-    }
-`);
-
+	            // Apply rainbow glow effect
+	            ctx$3.save();
+	            const glowColor = \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`; // Rainbow color effect
+	            ctx$3.shadowColor = glowColor;
+	            ctx$3.shadowBlur = 15;
+	            ctx$3.drawImage(img, imageX, imageY, imgWidth, imgHeight); // Draw image in bottom right corner
+	            ctx$3.restore();
+	        };
+	    }
+	`);
 
 	// HOOKS
 	addReplacement('+=$*rt+_*nt}', `
