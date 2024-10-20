@@ -155,81 +155,59 @@ function modifyCode(text) {
 
 	// TEXT GUI
 	addReplacement('(this.drawSelectedItemStack(),this.drawHintBox())', `
-	    if (ctx$3 && enabledModules["TextGUI"]) {
-	        const colorOffset = (Date.now() / 4000);
-	        const posX = 15;
-	        const posY = 17;
-	        ctx$3.imageSmoothingEnabled = true;
-	        ctx$3.imageSmoothingQuality = "high";
+    if (ctx$3 && enabledModules["TextGUI"]) {
+        const colorOffset = (Date.now() / 4000);
+        const posX = 15;
+        const posY = 17;
+        ctx$3.imageSmoothingEnabled = true;
+        ctx$3.imageSmoothingQuality = "high";
+        drawImage(ctx$3, textureManager.vapeTexture.image, posX, posY, 80, 21, \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`);
+        drawImage(ctx$3, textureManager.v4Texture.image, posX + 81, posY + 1, 33, 18);
 
-	        // Transparent, futuristic background for the GUI
-	        ctx$3.fillStyle = 'rgba(25, 25, 25, 0.6)'; // Dark, semi-transparent background
-	        ctx$3.strokeStyle = \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`; // Futuristic glowing border
-	        ctx$3.lineWidth = 2; // Border thickness
+        let offset = 0;
+        let stringList = [];
+        for(const [module, value] of Object.entries(enabledModules)) {
+            if (!value || module == "TextGUI") continue;
+            stringList.push(module);
+        }
 
-	        // Draw rounded rectangle for the module list background
-	        function drawRoundedRect(x, y, width, height, radius) {
-	            ctx$3.beginPath();
-	            ctx$3.moveTo(x + radius, y);
-	            ctx$3.lineTo(x + width - radius, y);
-	            ctx$3.quadraticCurveTo(x + width, y, x + width, y + radius);
-	            ctx$3.lineTo(x + width, y + height - radius);
-	            ctx$3.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-	            ctx$3.lineTo(x + radius, y + height);
-	            ctx$3.quadraticCurveTo(x, y + height, x, y + height - radius);
-	            ctx$3.lineTo(x, y + radius);
-	            ctx$3.quadraticCurveTo(x, y, x + radius, y);
-	            ctx$3.closePath();
-	            ctx$3.fill();
-	            ctx$3.stroke(); // Glowing outline
-	        }
+        stringList.sort(function(a, b) {
+            const compA = ctx$3.measureText(a).width;
+            const compB = ctx$3.measureText(b).width;
+            return compA < compB ? 1 : -1;
+        });
 
-	        drawRoundedRect(10, 10, 250, 300, 15); // Background for module list
+        for(const module of stringList) {
+            offset++;
+            // Get the key bound (convert to uppercase), if no key is bound, don't show the key part
+            const keyBound = modules[module].bind ? \`:\${modules[module].bind.toUpperCase()}\` : ""; 
+            drawText(ctx$3, \`\${module}\${keyBound}\`, posX + 6, posY + 12 + ((textguisize[1] + 3) * offset), textguisize[1] + "px " + textguifont[1], \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`, "left", "top", 1, textguishadow[1]);
+        }
 
-	        let offset = 0;
-	        let stringList = [];
-	        for(const [module, value] of Object.entries(enabledModules)) {
-	            if (!value || module == "TextGUI") continue;
-	            stringList.push(module);
-	        }
+        // Drawing the top-right logo as usual
+        drawImage(ctx$3, textureManager.vapeTexture.image, screenWidth - 80 - 20, 20, 80, 21, \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`);
 
-	        stringList.sort(function(a, b) {
-	            const compA = ctx$3.measureText(a).width;
-	            const compB = ctx$3.measureText(b).width;
-	            return compA < compB ? 1 : -1;
-	        });
+        // Drawing the bottom-right logo in the forefront
+        const img = new Image();
+        img.src = "https://raw.githubusercontent.com/7GrandDadPGN/VapeForMiniblox/refs/heads/main/assets/logo.png?raw=true";
+        img.onload = function() {
+            const imgWidth = 80;  // Set the desired width of the image
+            const imgHeight = 40;  // Set the desired height of the image
+            const screenWidth = window.innerWidth; // Get screen width
+            const screenHeight = window.innerHeight; // Get screen height
+            const imageX = screenWidth - imgWidth - 20;  // Position 20px from the right
+            const imageY = screenHeight - imgHeight - 20; // Position 20px from the bottom
 
-	        // Text settings: futuristic glowing text
-	        for(const module of stringList) {
-	            offset++;
-	            const keyBound = modules[module].bind ? \`:\${modules[module].bind.toUpperCase()}\` : ""; 
-	            ctx$3.shadowColor = \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`;
-	            ctx$3.shadowBlur = 10; // Soft glow effect for text
-	            drawText(ctx$3, \`\${module}\${keyBound}\`, posX + 20, posY + 12 + ((textguisize[1] + 3) * offset), textguisize[1] + "px " + textguifont[1], \`HSL(\${((colorOffset - (0.025 * offset)) % 1) * 360}, 100%, 50%)\`, "left", "top", 1, textguishadow[1]);
-	        }
-
-	        // Drawing the bottom-right logo in the forefront with a futuristic glow
-	        const img = new Image();
-	        img.src = "https://raw.githubusercontent.com/7GrandDadPGN/VapeForMiniblox/refs/heads/main/assets/logo.png?raw=true";
-	        img.onload = function() {
-	            const imgWidth = 80;
-	            const imgHeight = 40;
-	            const screenWidth = window.innerWidth;
-	            const screenHeight = window.innerHeight;
-	            const imageX = screenWidth - imgWidth - 20;
-	            const imageY = screenHeight - imgHeight - 20;
-
-	            // Apply rainbow glow effect to the image
-	            ctx$3.save();
-	            const glowColor = \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`; 
-	            ctx$3.shadowColor = glowColor;
-	            ctx$3.shadowBlur = 15;
-	            ctx$3.drawImage(img, imageX, imageY, imgWidth, imgHeight);
-	            ctx$3.restore();
-	        };
-	    }
-	`);
-
+            // Ensure it's drawn last and always on top
+            ctx$3.save();
+            const glowColor = \`HSL(\${(colorOffset % 1) * 360}, 100%, 50%)\`; // Rainbow color effect
+            ctx$3.shadowColor = glowColor;
+            ctx$3.shadowBlur = 15;
+            ctx$3.drawImage(img, imageX, imageY, imgWidth, imgHeight); // Draw image in bottom-right corner
+            ctx$3.restore();
+        };
+    }
+`);
 
 
 	// HOOKS
@@ -250,34 +228,34 @@ function modifyCode(text) {
 			}, 400);
 		}
 	`);
-	addReplacement('ClientSocket.on("CPacketMessage",$=>{', `
-		if (player$1 && $.text && !$.text.startsWith(player$1.name) && enabledModules["ChatDisabler"] && chatDelay < Date.now()) {
-			chatDelay = Date.now() + 1000;
-			setTimeout(function() {
-				ClientSocket.sendPacket(new SPacketMessage({text: Math.random() + ("\\n" + chatdisablermsg[1]).repeat(20)}));
-			}, 50);
-		}
+		addReplacement('ClientSocket.on("CPacketMessage",$=>{', `
+			if (player$1 && $.text && !$.text.startsWith(player$1.name) && enabledModules["ChatDisabler"] && chatDelay < Date.now()) {
+				chatDelay = Date.now() + 1000;
+				setTimeout(function() {
+					ClientSocket.sendPacket(new SPacketMessage({text: Math.random() + ("\\n" + chatdisablermsg[1]).repeat(20)}));
+				}, 50);
+			}
 
-		if ($.text && $.text.startsWith("\\\\bold\\\\How to play:")) {
-			breakStart = Date.now() + 25000;
-		}
+			if ($.text && $.text.startsWith("\\\\bold\\\\How to play:")) {
+				breakStart = Date.now() + 25000;
+			}
 
-		if ($.text && $.text.indexOf("Poll started") != -1 && $.id == undefined && enabledModules["AutoVote"]) {
-			ClientSocket.sendPacket(new SPacketMessage({text: "/vote 2"}));
-		}
+			if ($.text && $.text.indexOf("Poll started") != -1 && $.id == undefined && enabledModules["AutoVote"]) {
+				ClientSocket.sendPacket(new SPacketMessage({text: "/vote 2"}));
+			}
 
-		if ($.text && $.text.indexOf("won the game") != -1 && $.id == undefined && enabledModules["AutoQueue"]) {
-			game$1.requestQueue();
-		}
-	`);
-	addReplacement('ClientSocket.on("CPacketUpdateStatus",$=>{', `
-		if ($.rank && $.rank != "" && RANK.LEVEL[$.rank].permLevel > 2) {
-			game$1.chat.addChat({
-				text: "STAFF DETECTED : " + $.rank + "\\n".repeat(10),
-				color: "red"
-			});
-		}
-	`);
+			if ($.text && $.text.indexOf("won the game") != -1 && $.id == undefined && enabledModules["AutoQueue"]) {
+				game$1.requestQueue();
+			}
+		`);
+		addReplacement('ClientSocket.on("CPacketUpdateStatus",$=>{', `
+			if ($.rank && $.rank != "" && RANK.LEVEL[$.rank].permLevel > 2) {
+				game$1.chat.addChat({
+					text: "STAFF DETECTED : " + $.rank + "\\n".repeat(10),
+					color: "red"
+				});
+			}
+		`);
 
 	// REBIND
 	addReplacement('bindKeysWithDefaults("b",j=>{', 'bindKeysWithDefaults("semicolon",j=>{', true);
