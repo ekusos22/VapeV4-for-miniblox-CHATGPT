@@ -790,6 +790,30 @@ function modifyCode(text) {
 				return new Vector3$1(0, 0, 0);
 			}
 
+			// "infjump" Module
+			let infJumpDuration = 100;  // デフォルトの持続時間（ミリ秒）
+			const infjump = new Module("InfJump", function(callback) {
+			    if (callback) {
+			        window.addEventListener("keydown", function(event) {
+			            if (event.code === "Space") {
+			                // フライを一瞬有効化
+			                modules["Fly"].toggle();
+			                setTimeout(function() {
+			                    // フライを無効化
+			                    modules["Fly"].toggle();
+			                }, infJumpDuration);  // 持続時間
+			            }
+			        });
+			    } else {
+			        // モジュール無効時にイベントリスナーを解除
+			        window.removeEventListener("keydown", infjumpListener);
+			    }
+			});
+
+			// setoption コマンドで持続時間を変更できるようにする
+			infjump.addoption("Duration", Number, 100);
+
+
 			// Fly
 			let flyvalue, flyvert, flybypass;
 			const fly = new Module("Fly", function(callback) {
