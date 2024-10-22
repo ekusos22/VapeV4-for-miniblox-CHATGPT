@@ -377,7 +377,7 @@ function modifyCode(text) {
 		if (_ == "GrandDad") {
 			const $ = skins[_];
 			return new Promise((et, tt) => {
-				textureManager.loader.load("https://raw.githubusercontent.com/7GrandDadPGN/VapeForMiniblox/main/assets/skin.png", rt => {
+				textureManager.loader.load("", rt => {
 					const nt = {
 						atlas: rt,
 						id: _,
