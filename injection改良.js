@@ -843,32 +843,32 @@ function modifyCode(text) {
 			new Module("KeepSprint", function() {});
 			new Module("NoSlowdown", function() {});
 
-	function aimaura() {
-	    let nearestPlayer = null;
-	    let nearestDistance = Infinity;
+		function aimaura() {
+		    let nearestPlayer = null;
+		    let nearestDistance = Infinity;
 
-	    // Iterate through entities to find the nearest player
-	    const entities = game$1.world.entitiesDump;
-	    for (const entity of entities.values()) {
-	        if (entity.id == player$1.id) continue; // Skip self
-	        const distance = player$1.getDistanceSqToEntity(entity);
+		    // Iterate through entities to find the nearest player
+		    const entities = game$1.world.entitiesDump;
+		    for (const entity of entities.values()) {
+		        if (entity.id == player$1.id) continue; // Skip self
+		        const distance = player$1.getDistanceSqToEntity(entity);
 
-	        // Check if the entity is a valid target (e.g., within range and not invisible)
-	        if (distance < nearestDistance && entity instanceof EntityPlayer && !entity.isInvisibleDump()) {
-	            nearestDistance = distance;
-	            nearestPlayer = entity;
-	        }
-	    }
+		        // Check if the entity is a valid target (e.g., within range and not invisible)
+		        if (distance < nearestDistance && entity instanceof EntityPlayer && !entity.isInvisibleDump()) {
+		            nearestDistance = distance;
+		            nearestPlayer = entity;
+		        }
+		    }
 
-	    // If a valid player is found, adjust yaw to aim at them
-	    if (nearestPlayer) {
-	        const aimPos = player$1.pos.clone().sub(nearestPlayer.pos);
-	        const newYaw = Math.atan2(aimPos.x, aimPos.z) * (180 / Math.PI); // Convert to degrees
-	        player$1.yaw = newYaw; // Set player's yaw to aim at the nearest player
-	    }
-	}
+		    // If a valid player is found, adjust yaw to aim at them
+		    if (nearestPlayer) {
+		        const aimPos = player$1.pos.clone().sub(nearestPlayer.pos);
+		        const newYaw = Math.atan2(aimPos.x, aimPos.z) * (180 / Math.PI); // Convert to degrees
+		        player$1.yaw = newYaw; // Set player's yaw to aim at the nearest player
+		    }
+		}
 
-
+	
 			// NoFall
 			new Module("NoFall", function(callback) {
 				if (callback) {
