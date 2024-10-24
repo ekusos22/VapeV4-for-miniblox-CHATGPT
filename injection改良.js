@@ -843,7 +843,7 @@ function modifyCode(text) {
 			new Module("KeepSprint", function() {});
 			new Module("NoSlowdown", function() {});
 
-			function aimaura() {
+			new Module("aimaura", function(callback) {
 			    let nearestPlayer = null;
 			    let nearestDistance = Infinity;
 
